@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Container,H1,H3 ,Header, Content, Button, Input, Item, Text } from 'native-base';
+import { Container,H1,H3 ,Header, Content, Button, Input, Item, Text , StyleProvider } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import CategoryCard from '../Components/CategoryCard.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 class Home extends React.Component {
 
@@ -20,8 +19,13 @@ class Home extends React.Component {
 
 
   componentDidMount(){
-    this.getData();
+
+    this._unsubscribeFocus = this.props.navigation.addListener('focus',(payload)=>{
+      this.getData();
+    });
+    
   }  
+
 
   clearAsyncStorage = async() => {
     AsyncStorage.clear(); 
@@ -57,6 +61,7 @@ class Home extends React.Component {
 
     let id = this.NewID;
     let title = CurrentInput;
+    this.Categories = this.state.CategoriesToRender;
 
     var NewCategory = {
       CategoryID:id, 
@@ -65,13 +70,12 @@ class Home extends React.Component {
     }
 
     this.NewID++;
-
     this.Categories.push(NewCategory);
     this.storeData(this.Categories);
-
-    this.setState(prevState => ({
-      CategoriesToRender: [...prevState.CategoriesToRender,NewCategory]
-    }))
+    this.setState({
+      CategoriesToRender:this.Categories,
+      CategoryInput:'',
+    });
   }
 
   
@@ -91,7 +95,6 @@ class Home extends React.Component {
     const {CategoriesToRender,CategoryInput} = this.state;
 
    return(
-
     <Container>
     <Content>
       <Grid>
@@ -104,12 +107,12 @@ class Home extends React.Component {
              <Text>Add Category</Text>         
            </Button>
            <Button rounded onPress={this.clearAsyncStorage}>
-             <Text>Clear Async Storage</Text>       
+             <Text>Clear Everything</Text>       
            </Button>
           </Col>
           <Col>
             <Item rounded>
-             <Input placeholder='Rounded Textbox' onChangeText={(text)=>this.setState({CategoryInput:text})}/>
+             <Input placeholder='Rounded Textbox' value={CategoryInput} onChangeText={(text)=>this.setState({CategoryInput:text})}/>
            </Item>
           </Col>
         </Row>
@@ -123,6 +126,7 @@ class Home extends React.Component {
       </Grid>
     </Content>  
   </Container>
+
    );
  }
 }

@@ -10,6 +10,8 @@ import HomeScreen from './src/Screens/HomeScreen';
 import CategoriesScreen from './src/Screens/CategoriesScreen'
 import NotesScreen from './src/Screens/NotesScreen';
 import NewNoteScreen from './src/Screens/NewNoteScreen';
+
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -33,10 +35,10 @@ export default class App extends React.Component {
     }
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName={'Categories'}>
+         <Stack.Navigator initialRouteName={'Home'}>
            <Stack.Screen name="Home" component={HomeScreen} options={{ title:"Home"}}  />
            <Stack.Screen name="Details" component={DetailsScreen} options={{ title: "Details" }} />
-           <Stack.Screen name="Categories" component={CategoriesScreen} options={{ title: "Categories"}} />
+           <Stack.Screen name="Categories" component={CategoriesScreen} options={{ title: "Categories" , headerLeft:null}} />
            <Stack.Screen name="Notes" component={NotesScreen} options={{ title: "Notes" }} />
            <Stack.Screen name="NewNote" component={NewNoteScreen} options={{ title: "NewNote" }} />
 

@@ -12,27 +12,28 @@ class HomeScreen extends Component {
     };
   }
  
-
+  //<ImageBackground  source={require('../../assets/background.jpg')} style={styles.background} > </ImageBackground> 
   render() {
     return (  
-    <Container style={styles.container}>
-      <ImageBackground
-      source={require('../../assets/background.jpg')}
-      style={styles.background}
-      >
-      <Content padder contentContainerStyle={styles.content} >    
+
+    <Container>
+      <ImageBackground  source={require('../../assets/background2.jpg')} style={styles.background} >
+      <Content>    
       <Grid>
-          <Row>
-             <H1>MyNotes</H1>
+          <Row style={styles.FirstRow}>
+            <Text style={styles.Text}> NotesApp </Text>
           </Row>
-          <Row>
-            <Button onPress={() => this.props.navigation.navigate('Categories')} full rounded success>
+          <Row style={styles.SecondRow} >
+            <Button style={styles.Button}  onPress={() => this.props.navigation.push('Categories')} large rounded success>
               <Text>Start Writing!</Text>
-            </Button>
-          </Row>    
+            </Button>    
+          </Row> 
+          <Row style={styles.ThirdRow}>
+            <Text style={styles.MiniText}> React Native Notes App </Text>
+          </Row>   
       </Grid>
       </Content>
-    </ImageBackground> 
+      </ImageBackground>
     </Container>
     );
   }
@@ -44,11 +45,43 @@ const styles = StyleSheet.create({
     height: '100%'
   },
   content:{
-    flex: 1,
-    justifyContent: 'center',
-    alignItems:'center',
+
   },
-  container:{
+  FirstRow:{
+    height:180,
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 20,
+
+  },
+  SecondRow:{
+     height:380,
+     flex:1,
+     alignItems: 'center',
+     justifyContent: 'center',
+  },
+  ThirdRow:{
+    height:150,
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center',
+ },
+  Text:{
+    fontSize:50,
+    fontWeight:'bold',
+    color:'black',
+
+  },
+  MiniText:{
+    fontSize:14,
+    fontWeight:'bold',
+    color:'white'
+
+  },
+  Button:{
+    alignSelf:'center'
+    
   }
 });
 

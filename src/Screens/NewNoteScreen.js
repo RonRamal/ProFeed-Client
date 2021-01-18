@@ -4,6 +4,8 @@ import { Container, H3, Content, Button, Left, Right, Text,H1,Item,Form,Input,Te
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 class NewNoteScreen extends Component {
   constructor(props) {
     super(props);
@@ -12,8 +14,9 @@ class NewNoteScreen extends Component {
       NoteInfo:"",
       image:"",
       hasCameraPermission: null,
-      Notes:[],
     };
+    this.Category=[];
+    this.Notes=[];
 
   }
 
@@ -45,6 +48,33 @@ class NewNoteScreen extends Component {
     }
   }
 
+  storeCategories = async (value) => {
+    try {   
+      await AsyncStorage.setItem('Categories', JSON.stringify(value))
+     }catch (e) {
+       console.log(e);
+     }
+  }
+
+  getCategories = async (CategoryId) => {
+    try {
+      var oldNotesCounter = 0;
+      const getAsyncStorageDataT = await AsyncStorage.getItem('Categories');
+      const getAsyncStorageParsedY = JSON.parse(getAsyncStorageDataT);
+      if(getAsyncStorageParsedY !== null) {  
+              
+        var index = getAsyncStorageParsedY.findIndex(obj => obj.CategoryID === CategoryId);
+        oldNotesCounter=getAsyncStorageParsedY[index].NoteCounter;
+        oldNotesCounter++;
+        getAsyncStorageParsedY[index].NoteCounter=oldNotesCounter;
+        this.storeCategories(getAsyncStorageParsedY); 
+      }
+      
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
   setAsyncStorage = async (value) => {
     try {   
       await AsyncStorage.setItem('Notes', JSON.stringify(value))
@@ -54,50 +84,65 @@ class NewNoteScreen extends Component {
   }
 
   getAsyncStorage = async () => {
+    const Notess=[];
     try {
       const getAsyncStorageData = await AsyncStorage.getItem('Notes');
       const getAsyncStorageParsed = JSON.parse(getAsyncStorageData);
-      if(getAsyncStorageParsed !== null) {       
-        this.setState({
-          Notes:getAsyncStorageParsed,
-        })    
+      if(getAsyncStorageParsed !== null) {      
+              
+        getAsyncStorageParsed.map((item =>{
+            Notess.push(item);
+        }))
+
+        this.Notes=Notess;
       }
     } catch(e) {
       console.log(e);
     }
   }
 
-  SubmitNote =(CategoryId)=>{
-    
-    let NotesToSave = this.state.Notes;
+  SubmitNote =()=>{
+
+    const {CategoryId} = this.props.route.params;
+    const NotesToSave = this.Notes;
      
     let NewNote = {
-    CategoryID:CategoryId,
-    NoteTitle:this.state.NoteTitle,
-    NoteText:this.state.NoteInfo,
-    NoteImage:this.state.ImageURL,
+     CategoryID:CategoryId,
+     NoteTitle:this.state.NoteTitle,
+     NoteText:this.state.NoteInfo,
+     NoteImage:this.state.image,
     }
      
     NotesToSave.push(NewNote);
     this.setAsyncStorage(NotesToSave);
+    this.getCategories(CategoryId);
+    this.setState({
+      NoteTitle:'',
+      NoteInfo:'',
+      image:'',
+    });
 
-    
+    this.props.navigation.goBack();
   }
- ValidateForm =(CategoryId)=>{
-   
-   let title=this.state.NoteTitle;
-   let info=this.state.NoteInfo;
+
+
+  ValidateForm =()=>{
+
+    let title=this.state.NoteTitle;
+    let info=this.state.NoteInfo;
 
     if(info==='' || title===''){
       alert("Missing Note Info/Title");
     }
+     
 
-  this.SubmitNote(CategoryId);
+    this.SubmitNote;
  }
 
   render() {
-    const { image,hasCameraPermission} = this.state;
+    const {image,hasCameraPermission,NoteInfo,NoteTitle} = this.state;
     const {CategoryId,CategoryTitle} = this.props.route.params;
+    const {navigation} = this.props
 
     if (hasCameraPermission === null) {
      return <View />;
@@ -118,9 +163,9 @@ class NewNoteScreen extends Component {
            <Col>
             <Form>
              <Item rounded > 
-                <Input placeholder='Note Title' onChangeText={InputTitle=> this.setState({NoteTitle: InputTitle})}/>
+                <Input placeholder='Note Title' value={NoteTitle} onChangeText={InputTitle=> this.setState({NoteTitle: InputTitle})}/>
              </Item>
-             <Textarea rowSpan={5} bordered placeholder="Nore info.." onChangeText={Info=> this.setState({NoteInfo: Info})} />
+             <Textarea rowSpan={5} bordered placeholder="Nore info.." value={NoteInfo} onChangeText={Info=> this.setState({NoteInfo: Info})} />
             </Form>        
            </Col>
             <Col>
@@ -136,12 +181,10 @@ class NewNoteScreen extends Component {
                  <Text>Gallery</Text>
                </Button>
               </Row>    
-              <Button rounded success style={styles.SubmitButton} onPress={this.SubmitNote(CategoryId)}>
+              <Button rounded success style={styles.SubmitButton} onPress={this.SubmitNote} >
                <Text>Submit Note</Text>
               </Button>
-              <Button rounded info style={styles.SubmitButton} onPress={() => navigation.navigate('Notes',{CategoryId:Category.CategoryID,CategoryTitle:Category.CategoryTitle})}>
-               <Text>Go Back</Text>
-              </Button>
+             
             </Col>       
          </Grid>
         </Content>
