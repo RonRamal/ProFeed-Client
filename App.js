@@ -10,6 +10,8 @@ import HomeScreen from './src/Screens/HomeScreen';
 import CategoriesScreen from './src/Screens/CategoriesScreen'
 import NotesScreen from './src/Screens/NotesScreen';
 import NewNoteScreen from './src/Screens/NewNoteScreen';
+import LoginScreen from './src/Screens/LoginScreen';
+import RegisterationScreen from './src/Screens/RegisterationScreen';
 
 
 export default class App extends React.Component {
@@ -35,13 +37,13 @@ export default class App extends React.Component {
     }
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName={'Home'}>
+         <Stack.Navigator initialRouteName={'Login'}>
+           <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />
+           <Stack.Screen name="Register" component={RegisterationScreen} options={{headerShown:false}} />
            <Stack.Screen name="Home" component={HomeScreen} options={{ title:"Home"}}  />
-           <Stack.Screen name="Details" component={DetailsScreen} options={{ title: "Details" }} />
            <Stack.Screen name="Categories" component={CategoriesScreen} options={{ title: "Categories" , headerLeft:null}} />
            <Stack.Screen name="Notes" component={NotesScreen} options={{ title: "Notes" }} />
            <Stack.Screen name="NewNote" component={NewNoteScreen} options={{ title: "NewNote" }} />
-
          </Stack.Navigator>
       </NavigationContainer>
     );
