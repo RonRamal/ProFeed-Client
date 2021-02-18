@@ -14,7 +14,6 @@ class LoginScreen extends React.Component {
 
   btnFBLogin = async()=> {
     try {
-
         await Facebook.initializeAsync({
           appId: '802022317193125',
         });
