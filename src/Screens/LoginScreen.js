@@ -21,12 +21,10 @@ class LoginScreen extends React.Component {
         permissions: ['public_profile','email'],
         });
 
-        if (type === 'success')
-        {        
+        if (type === 'success'){        
             const response = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${token}`);
             let res = await response.json();
             this.setState({token:token})
-
             Alert.alert('Logged in!',`Hi NAME: ${res.name}!\nEMAIL: ${res.email}\nPICTURE: ${res.picture.data.url}`); 
             //Alert.alert('Logged in!', 'Hi NAME: ${res.name}!\nEMAIL: ${res.email}\nPICTURE: ${res.picture}\nRES:${JSON.stringify(res)}');
         }else
