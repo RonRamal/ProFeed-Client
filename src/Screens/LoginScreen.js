@@ -102,7 +102,7 @@ class LoginScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.SignUpBtn} >
-          <Text style={styles.loginText}>SignUp</Text>
+          <Text style={styles.loginText}>Signup</Text>
         </TouchableOpacity>
         </View>
     );
