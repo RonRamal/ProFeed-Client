@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Assignment3Expo",
-    "slug": "Assignment3Expo",
+    "name": "ProFeedClient",
+    "slug": "ProFeedClient",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/NewLogo.png",
