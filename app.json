@@ -4,9 +4,9 @@
     "slug": "ProFeedClient",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/NewLogo.png",
+    "icon": "./assets/IconProFeed.png",
     "splash": {
-      "image": "./assets/SplashScreenV2.png",
+      "image": "./assets/SplashScreenPro.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
