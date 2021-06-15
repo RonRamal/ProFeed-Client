@@ -14,7 +14,7 @@ class UserSearchScreen extends React.Component {
       super(props)
       this.state={      
         MainCategories:['Tech','Food','Fashion','Fitness','Travel'],
-        SubCategories:['Homemade','Fast food','Vegan','Accessories','Style','Gaming'],
+        SubCategories:['Homemadee','Fast food','Vegan','Accessories','Style','Gaming'],
         OtherCategories:['Unboxing','Review','Influencer','Workout','Recipe'],
         QueryInput:'',
         First_Stage_Toggle:true,
