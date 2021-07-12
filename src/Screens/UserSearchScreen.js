@@ -13,9 +13,9 @@ class UserSearchScreen extends React.Component {
     constructor(props){
       super(props)
       this.state={      
-        MainCategories:['Tech','Food','Fashion','Fitness','Travel'],
-        SubCategories:['Homemade','Fast food','Vegan','Accessories','Style','Gaming'],
-        OtherCategories:['Unboxing','Review','Influencer','Workout','Recipe'],
+        MainCategories:['Tech','Food','Fashion','Fitness','Travel','Fintech'],
+        SubCategories:['Stock','Fast food','Vegan','Accessories','Style','Gaming'],
+        OtherCategories:['Unboxing','Review','Influencer','Workout','Recipe','Forex'],
         QueryInput:'',
         First_Stage_Toggle:true,
         Second_Stage_Toggle:false,
@@ -53,7 +53,7 @@ class UserSearchScreen extends React.Component {
     let myQuery= this.state.QueryInput;
 
     if(HashTagEnabled){
-      let tempInput= 'hashtag'+input;
+      let tempInput= 'HASHTAG'+input;
       input = tempInput;
       this.setState({
         HashTag_BTN_Toggle:false,

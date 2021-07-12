@@ -12,9 +12,9 @@ class UserSearchCustom extends React.Component {
     constructor(props){
       super(props)
       this.state={      
-        MainCategories:['Fashion','Food','Tech','Fitness','Home styling','Travel'],
-        SubCategories:['Home cooking','Fast food','Vegan','Brand','Accessories','Style'],
-        OtherCategories:['Unboxing','Review','Influencer'],
+        MainCategories:['Fashion','Food','Tech','Fitness','Home styling','Travel','Fintech'],
+        SubCategories:['Home cooking','Fast food','Vegan','Brand','Accessories','Style','stock'],
+        OtherCategories:['Unboxing','Review','Influencer','Forex'],
         QueryInput:'',
 
         FirstInput:'',
