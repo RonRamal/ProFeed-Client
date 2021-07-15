@@ -1,28 +1,36 @@
 import React, { useState }  from 'react';
-import { View, Text, TextInput, Alert, ScrollView, Keyboard ,StyleSheet, SafeAreaView} from 'react-native';
+import { View, Text, TextInput, Alert, ScrollView, Keyboard ,StyleSheet, SafeAreaView, RefreshControlBase} from 'react-native';
+import { Content} from 'native-base';
+
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {registration} from '../../API/firebaseMethods';
-import {PostUserToServer} from '../../UserMethods/UserAPI';
+import {CheckIfUserExists, UserPostRequest} from '../../UserMethods/NodeJsService'
 
 function SignUpScreen ({ navigation })  {
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('Ron');
+  const [lastName, setLastName] = useState('sdsd');
+  const [userName, setUserName] = useState('sdasd');
+  const [email, setEmail] = useState('RonRamal@outlook.com');
+  const [password, setPassword] = useState('qwerty123');
+  const [confirmPassword, setConfirmPassword] = useState('qwerty123');
 
   const emptyState = () => {
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
+    setFirstName('Ron');
+    setLastName('sdsd');
+    setUserName('sdasd');
+    setEmail('RonRamal@outlook.com');
+    setPassword('qwerty123');
+    setConfirmPassword('qwerty123');
   };
 
   const handlePress = () => {
     if (!firstName) {
-      Alert.alert('First name is required');
+      Alert.alert('First name is required'); 
+    } else if (!lastName) {
+      Alert.alert('LastName field is required.');
+    } else if (!userName) {
+      Alert.alert('userName field is required.');
     } else if (!email) {
       Alert.alert('Email field is required.');
     } else if (!password) {
@@ -33,14 +41,17 @@ function SignUpScreen ({ navigation })  {
     } else if (password !== confirmPassword) {
       Alert.alert('Password does not match!');
     } else {
-      registration(email,password,lastName,firstName);
-
-      PostUserToServer(email,lastName,firstName);
+     //registration(email,password,lastName,firstName);
       
-      navigation.navigate('Loading');
+      CheckIfUserExists(email).then((result) => {
+        if (!result){
+          UserPostRequest(firstName,lastName,userName,email,password);
+        }else{
+          alert('EMAIL ALREADY IN USE!');
+        }
+      });
+      //navigation.navigate('Loading');
       emptyState();
-
-
     }
   };
 
@@ -49,6 +60,7 @@ function SignUpScreen ({ navigation })  {
  return (
 
   <View style={styles.container}>
+   <Content style={{width:'100%',paddingLeft:10}}>
 
     <Text style={styles.logo}>Create an account</Text>
 
@@ -69,6 +81,16 @@ function SignUpScreen ({ navigation })  {
             placeholderTextColor="#003f5c"
             value={lastName}
             onChangeText={(name) => setLastName(name)}/>
+        </View>
+
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="UserName..." 
+            placeholderTextColor="#003f5c"
+            value={userName}
+            onChangeText={(userName) => setUserName(userName)}
+            autoCapitalize="none"/>
         </View>
 
         <View style={styles.inputView} >
@@ -109,7 +131,7 @@ function SignUpScreen ({ navigation })  {
         <TouchableOpacity style={styles.SignIn} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.loginText}>Already have an account?</Text>
         </TouchableOpacity>
-
+        </Content>  
   </View>
   );
 }

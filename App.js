@@ -57,7 +57,7 @@ export default class App extends React.Component {
     }
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName={'Home'}>
+         <Stack.Navigator initialRouteName={'Login'}>
            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown:false }} />
            <Stack.Screen name="Search" component={UserSearchScreen} options={{headerShown:false}}  />
            <Stack.Screen name="CustomSearch" component={UserSearchCustom} options={{headerShown:false}}  />
@@ -83,14 +83,14 @@ export default class App extends React.Component {
 //Create Navigators
 const Stack = createStackNavigator();
 
-/*const Tab = createBottomTabNavigator();
-function myTabNavigator() {
-  return (
-    <Tab.Navigator initialRouteName="Home" backBehavior='history' tabBarOptions={{labelStyle:{fontSize:18}}}>
-       <Tab.Screen name="Home" component={HomeScreen} options={{tabBarLabel:'Profile',tabBarIcon: ()=>(<Icon name="person-circle" style={{ fontSize:40}}/>)}}/>
-       <Tab.Screen name="Lists" component={ListsScreen} options={{tabBarLabel:'UserArea',tabBarIcon: ()=>(<Icon name="ios-home" style={{ fontSize:40}} />)}} />
-       <Tab.Screen name="About" component={AboutScreen} options={{tabBarLabel:'About',tabBarIcon: ()=>(<Icon name="ios-information-circle-sharp" style={{ fontSize:40}} />)}} />
-    </Tab.Navigator>
-  );
-}*/
+// const Tab = createBottomTabNavigator();
+// function myTabNavigator() {
+//   return (
+//     <Tab.Navigator initialRouteName="Home" backBehavior='history' tabBarOptions={{labelStyle:{fontSize:18}}}>
+//        <Tab.Screen name="Home" component={HomeScreen} options={{tabBarLabel:'Profile',tabBarIcon: ()=>(<Icon name="person-circle" style={{ fontSize:40}}/>)}}/>
+//        <Tab.Screen name="Lists" component={ListsScreen} options={{tabBarLabel:'UserArea',tabBarIcon: ()=>(<Icon name="ios-home" style={{ fontSize:40}} />)}} />
+//        <Tab.Screen name="About" component={AboutScreen} options={{tabBarLabel:'About',tabBarIcon: ()=>(<Icon name="ios-information-circle-sharp" style={{ fontSize:40}} />)}} />
+//     </Tab.Navigator>
+//   );
+// }
 

@@ -3,6 +3,10 @@ import * as Facebook from 'expo-facebook';
 import { StyleSheet, View,Alert,Image, TextInput,Text,TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {signIn} from '../../API/firebaseMethods';
+import {LoginRequestUserName} from '../../UserMethods/NodeJsService';
+import {LoginRequestEmail} from '../../UserMethods/NodeJsService';
+
+
 import "firebase/firestore";
 import firebase from "firebase";
 import {PostUserToServerFacebook} from '../../UserMethods/UserAPI';
@@ -10,8 +14,9 @@ import {CheckIfUserExists} from '../../UserMethods/UserAPI';
 
 function LoginScreen ({navigation}) {
  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('RonRamal@outlook.com');
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('qwerty123');
   const [name, setName] = useState('');
   const [token, setToken] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
@@ -20,17 +25,35 @@ function LoginScreen ({navigation}) {
 
 
   const handlePress = () => {
-    if (!email) {
-      Alert.alert('Email field is required.');
-    }
-
-    if (!password) {
+    if (!email && !userName ) {
+      Alert.alert('Email/UserName field is required.');
+      return;
+    }else if(!password){
       Alert.alert('Password field is required.');
+      return;
     }
 
-    signIn(email, password);
-    setEmail('');
-    setPassword('');
+    //signIn(email, password);
+
+    if(email){
+      console.log(email);
+      console.log(password);
+
+      let aUser = LoginRequestEmail(email,password);
+      if(aUser){
+        navigation.navigate('Home');
+      }
+
+    }else{
+      let aUser = LoginRequestUserName(email,password);
+      if(aUser){
+        navigation.navigate('Home');
+      }
+    }
+    
+    // setEmail('');
+    // setUserName('');
+    // setPassword('');
   };
 
   const btnFBLogin = async() => {
@@ -132,6 +155,16 @@ const btnFetch_PersonPicture = () => {
 
         <View style={styles.inputView} >
           <TextInput  
+            style={styles.inputText}
+            placeholder="UserName..." 
+            placeholderTextColor="#003f5c"
+            value={userName}
+            onChangeText={(userName) => setUserName(userName)}
+            autoCapitalize="none"/>
+        </View>
+
+        <View style={styles.inputView} >
+          <TextInput  
             secureTextEntry
             style={styles.inputText}
             placeholder="Password..." 
@@ -157,6 +190,7 @@ const btnFetch_PersonPicture = () => {
         <TouchableOpacity style={styles.SignUpBtn} onPress={() =>navigation.navigate('Register')}  >
           <Text style={styles.loginText}>SignUp</Text>
         </TouchableOpacity>
+        
   </View>
   );
 }
