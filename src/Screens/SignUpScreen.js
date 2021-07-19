@@ -1,10 +1,9 @@
-import React, { useState }  from 'react';
-import { View, Text, TextInput, Alert, ScrollView, Keyboard ,StyleSheet, SafeAreaView, RefreshControlBase} from 'react-native';
-import { Content} from 'native-base';
-
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import {registration} from '../../API/firebaseMethods';
-import {CheckIfUserExists, UserPostRequest} from '../../UserMethods/NodeJsService'
+import React, { useState,useEffect }  from 'react';
+import { View, Text, TextInput, Alert, ActivityIndicator ,StyleSheet} from 'react-native';
+import { Content,Container} from 'native-base';
+import { RotationGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
+import {CheckIfUserExists, UserPostRequest} from '../../UserMethods/NodeJsService';
+import {getToken, storeToken} from '../../UserMethods/AsyncStorageService';
 
 function SignUpScreen ({ navigation })  {
 
@@ -14,6 +13,8 @@ function SignUpScreen ({ navigation })  {
   const [email, setEmail] = useState('RonRamal@outlook.com');
   const [password, setPassword] = useState('qwerty123');
   const [confirmPassword, setConfirmPassword] = useState('qwerty123');
+  const [signUpLoading, setSignUpLoading] = useState(false);
+  const [UserBusy,setUserBusy] = useState(false);
 
   const emptyState = () => {
     setFirstName('Ron');
@@ -24,54 +25,81 @@ function SignUpScreen ({ navigation })  {
     setConfirmPassword('qwerty123');
   };
 
-  const handlePress = () => {
+
+  useEffect(() => {
+   // console.log("SignUpScreen - UseEffect Activated UserBusy " + UserBusy);
+    if(UserBusy){
+      setSignUpLoading(true);
+
+    }else{
+      setSignUpLoading(false);
+    }
+  });
+
+ async function handlePress(){
+    setUserBusy(true);
+
     if (!firstName) {
-      Alert.alert('First name is required'); 
+      Alert.alert('First name is required');  
+      setUserBusy(true);
+      return;    
     } else if (!lastName) {
       Alert.alert('LastName field is required.');
+      setUserBusy(true);
+      return;
     } else if (!userName) {
       Alert.alert('userName field is required.');
+      setUserBusy(true);
+      return;
     } else if (!email) {
       Alert.alert('Email field is required.');
+      setUserBusy(true);
+      return;
     } else if (!password) {
       Alert.alert('Password field is required.');
+      setUserBusy(true);
+      return;
     } else if (!confirmPassword) {
       setPassword('');
+      setUserBusy(true);
       Alert.alert('Confirm password field is required.');
+      return;
     } else if (password !== confirmPassword) {
+      setConfirmPassword('');
+      setUserBusy(true);
       Alert.alert('Password does not match!');
+      return;
     } else {
-     //registration(email,password,lastName,firstName);
-      
-      CheckIfUserExists(email).then((result) => {
-        if (!result){
-          UserPostRequest(firstName,lastName,userName,email,password);
+     let checkRes = await CheckIfUserExists(email);
+     console.log("UserPostRequest checkRes: " + JSON.stringify(checkRes));
+        if (!checkRes)
+        {
+          let postRes = await UserPostRequest(firstName,lastName,userName,email,password);
+          console.log("UserPostRequest postRest: " +  JSON.stringify(postRes));
+          if(postRes){
+            alert("Signed Up Successfully");
+            setUserBusy(false);
+            storeToken(postRes);
+            navigation.navigate("Login");
+          }
         }else{
-          alert('EMAIL ALREADY IN USE!');
+          alert("Email is already in Use");
+          setUserBusy(false);
         }
-      });
-      //navigation.navigate('Loading');
-      emptyState();
-    }
-  };
-
-  
-
+     emptyState();
+  }
+}
  return (
-
-  <View style={styles.container}>
-   <Content style={{width:'100%',paddingLeft:10}}>
-
-    <Text style={styles.logo}>Create an account</Text>
-
+  <Container style={styles.container}>
+    <Text style={styles.MainLogo}>SignUp</Text>
+   <Content style={styles.content}>
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
             placeholder="First Name..." 
             placeholderTextColor="#003f5c"
             value={firstName}
-            onChangeText={(name) => setFirstName(name)}/>
-            
+            onChangeText={(name) => setFirstName(name)}/>   
         </View>
 
         <View style={styles.inputView} >
@@ -125,14 +153,15 @@ function SignUpScreen ({ navigation })  {
         </View>
         
         <TouchableOpacity style={styles.SignUpBtn} onPress={handlePress}>
-          <Text style={styles.loginText}>Sign Up</Text>
+          {signUpLoading ? (<ActivityIndicator size='large' color="#1DA1F2" />) : (<Text style={styles.ButtonText}>Sign Up</Text>)}
+
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.SignIn} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.loginText}>Already have an account?</Text>
+        <TouchableOpacity style={styles.HaveAccount_btn} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.ButtonText}>Already have an account?</Text>
         </TouchableOpacity>
-        </Content>  
-  </View>
+        </Content> 
+ </Container>
   );
 }
 
@@ -141,46 +170,60 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#003f5c',
-    justifyContent: 'center',
-    alignItems:'center',
+    backgroundColor: '#1DA1F2',
+    width:'100%'
   },
-  logo:{
+  content:{
+    width:'100%',
+    alignContent:'center',
+  },
+  MainLogo:{
     fontWeight:"bold",
     fontSize:36,
-    color:"#fb5b5a",
-    marginBottom:40,
-    paddingBottom: 40,
+    color:"white",
+    marginBottom:30,
+    alignSelf:'center',
+    marginTop:30
   },
   inputView:{
-    width:"80%",
-    backgroundColor:"#465881",
+    width:'80%',
+    backgroundColor:"white",
     borderRadius:25,
     height:50,
     marginBottom:20,
     justifyContent:"center",
+    alignItems:'center',
+    alignSelf:'center',
     padding:20
   },
   inputText:{
+    width:'100%',
     height:50,
-    color:"white",
+    color:"black",
+    fontWeight:'bold',
     fontSize:18
   },
   SignUpBtn:{
-    width:200,
-    backgroundColor:"#fb5b5a",
+    width:'80%',
+    backgroundColor:"white",
     borderRadius:25,
     height:50,
     alignItems:'center',
     justifyContent:"center",
+    alignSelf:'center',
     marginTop:40,
+    marginBottom:40
   },
-  SignIn:{
-    marginTop: 30,
+  HaveAccount_btn:{
+    width:'100%',
+    alignItems:'center',
+    justifyContent:"center"
   },
-  loginText:{
-    color:"white",
-    fontSize:18
+  ButtonText:{
+    color:"black",
+    fontSize:22,
+    fontWeight:'bold',
   },
 });
-export default SignUpScreen
+
+export default SignUpScreen;

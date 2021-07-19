@@ -1,84 +1,255 @@
-import React from 'react';
-import { Alert, StyleSheet,View ,TouchableHighlight} from 'react-native';
-import { Container,Header, Content, Button, Input, Item, Text ,Icon,Switch, Left } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import CategoryButton from '../Components/CategoryButton';
+import React, {useState,useEffect} from 'react';
+import { StyleSheet, View,ActivityIndicator, TextInput,Text,TouchableOpacity} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { getToken,storeToken } from '../../UserMethods/AsyncStorageService';
+import { UserPutRequest } from '../../UserMethods/NodeJsService';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import {faUser} from '@fortawesome/free-solid-svg-icons'
 
+function MyProfile ({navigation}) {
+ 
+  const [FirstName, setFirstName] = useState('');
+  const [LastName, setLastName] = useState('');
+  const [Email, setEmail] = useState('');
+  const [UserName, setUserName] = useState('');
+  const [PhoneNumber, setPhoneNumber] = useState('');
+  const [OldPassword, setOldPassword] = useState('');
+  const [NewPassword, setNewPassword] = useState('');
+  const [UpdateLoading, setUpdateLoading] = useState(false);
+  const [UserBusy, setUserBusy] = useState(false);
+  const [userDataLoaded, setUserDataLoaded] = useState(false);
 
-class UserSearch extends React.Component {
-
-    constructor(props){
-      super(props)
-      this.state={      
-       
-      };
+  const emptyStates = () =>{
+    setEmail('');
+    setFirstName('');
+    setLastName('');
+    setUserName('');
+    setPassword('');
+    setPhoneNumber('');
+    setUserBusy(false);
   }
 
+  
 
-  componentDidMount(){
+  
+  useEffect(() => {
+
+   // console.log("Update User USEEFFECT - ")
+    async function updateUserData(){    
+
+      let aUserData = await getToken();
+      if(aUserData){
+        setFirstName(aUserData.FirstName);
+        setLastName(aUserData.LastName);
+        setEmail(aUserData.Email);
+        setUserName(aUserData.UserName);
+       // setPhoneNumber(aUserData.PhoneNumber);
+      }else{
+         emptyStates();
+      }
+    }
+    //console.log("userDataLoaded " + userDataLoaded);
+    if(!userDataLoaded){
+      updateUserData();
+      setUserDataLoaded(true);
+      console.log("userDataLoaded " + userDataLoaded);
+
+    }
+    //console.log("Profile Screen - UseEffect Activated UserBusy " + UserBusy);
+    if(UserBusy){
+      setUpdateLoading(true);
+    }else{
+      setUpdateLoading(false);
+    }
+  });
 
    
-    this.setState({        
-    })
-  }  
-
-  componentWillUnmount(){
-
-  }
 
 
-  
-  ClearStages=()=>{
-
-    this.setState({   
+  async function PostUserData_eventHandler(){    
+    console.log("PostUserData_eventHandler Pressed");
+    setUserBusy(true);
+    if (!FirstName) {
+      alert('First name is required');  
+      setUserBusy(false);
+      return;    
+    } else if (!LastName) {
+      alert('LastName field is required.');
+      setUserBusy(false);
+      return;
+    } else if (!UserName) {
+      alert('userName field is required.');
+      setUserBusy(false);
+      return;
+    } else if (!Email) {
+      alert('Email field is required.');
+      setUserBusy(false);
+      return;
+    // } else if (!PhoneNumber) {
+    //   alert('PhoneNumber field is required.');
+    //   setUserBusy(false);
+    //   return;
+    }else{
     
-    })
+      let putRes = await UserPutRequest(FirstName,LastName,UserName,Email);
+      console.log("UserPutRequest putRest: " +  JSON.stringify(putRes));
+      if(putRes){
+        alert("User Updated Successfully");
+        setUserBusy(false);
+        storeToken(putRes);
+      }
+    
+     emptyState();
   }
-  render(){
-  
-   return(
-    <Container>
+  }
+  return (
+  <View style={styles.container}>
+        <Text style={styles.MainLogo}>
+        <FontAwesomeIcon style={{color:'white',marginLeft:10}} size={45} icon={faUser} />
+             My Profile
+        </Text>
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="Email..." 
+            placeholderTextColor="white"
+            value={Email}
+            onChangeText={(Email) => setEmail(Email)}
+            autoCapitalize="none"/>
+        </View>
 
-        <Text style={styles.StillHeader}>
-            Profile
-        <FontAwesomeIcon style={styles.HeaderIcon} size={45} icon={faUser} />
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="UserName..." 
+            placeholderTextColor="white"
+            value={UserName}
+            onChangeText={(UserName) => setUserName(UserName)}
+            autoCapitalize="none"/>
+        </View>
 
-        </Text>         
-      <Content style={{width:'100%',paddingLeft:10,}}>
-          
-           
-      </Content>  
-           
-    </Container>
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="FirstName..." 
+            placeholderTextColor="white"
+            value={FirstName}
+            onChangeText={(FirstName) => setFirstName(FirstName)}
+            autoCapitalize="none"/>
+        </View>
 
-   );
- }
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="LastName..." 
+            placeholderTextColor="white"
+            value={LastName}
+            onChangeText={(LastName) => setLastName(LastName)}
+            autoCapitalize="none"/>
+        </View>
+
+       <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="PhoneNumber..." 
+            placeholderTextColor="white"
+            value={PhoneNumber}
+            onChangeText={(PhoneNumber) => setPhoneNumber(PhoneNumber)}
+            autoCapitalize="none"/>
+        </View> 
+        <TouchableOpacity style={styles.loginBtn} onPress={PostUserData_eventHandler}>
+        {UpdateLoading ? (<ActivityIndicator size='large' color="#1DA1F2" />):(<Text style={styles.LoginText}>Update Details</Text>)}
+        </TouchableOpacity>
+  </View>
+  );
 }
-export default UserSearch
-
-
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
+    backgroundColor: '#1DA1F2',
     justifyContent: 'center',
   },
-  StillHeader:{
+  MainLogo:{
     fontWeight:"bold",
-    fontSize:48,
-    color:"#1DA1F2",
-    marginBottom:15,
+    fontSize:50,
+    color:"white",
+    marginBottom:70,
     alignSelf:'center',
-    marginTop:30,
-   },
-   HeaderIcon:{
-    marginLeft: 0, 
-    marginRight: 0,
-    fontSize: 60,
-    color:'#1DA1F2',
-   },
+  },
+  SecondaryLogo:{
+    fontWeight:"bold",
+    fontSize:35,
+    color:"white",
+    marginBottom:30,
+    marginTop: 40,
+  },
+  inputView:{
+    width:"80%",
+    backgroundColor:"#465881",
+    borderRadius:25,
+    height:50,
+    marginBottom:30,
+    justifyContent:"center",
+    padding:20
+  },
+  Pic:{
+    width:"60%",
+    height:100,
+    backgroundColor:"#465881",
+
+  },
+  inputText:{
+    height:50,
+    color:"white",
+    fontSize:18
+  },
+  forgot:{
+    color:"white",
+    fontSize:11
+  },
+  loginBtn:{
+    width:"80%",
+    backgroundColor:"white",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+  },
+  facebookBtn:{
+    width:"80%",
+    backgroundColor:"#3b5998",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+  },
+  SignUpBtn:{
+    width:"25%",
+    backgroundColor:"white",
+    borderRadius:10,
+    height:30,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:20,
+  },
+  SignUpText:{
+    color:"#1DA1F2",
+    fontSize:18,
+    fontWeight:'bold'
+  },
+  FaceBookLoginText:{
+    color:"white",
+    fontSize:18
+  },
+  LoginText:{
+    color:"#1DA1F2",
+    fontSize:18,
+    fontWeight:'bold'
+  }
 });
+export default MyProfile;

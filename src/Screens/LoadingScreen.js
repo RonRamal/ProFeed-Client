@@ -1,20 +1,23 @@
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import * as firebase from 'firebase';
+import {getToken, storeToken} from '../../UserMethods/AsyncStorageService';
 
 export default function LoadingScreen({ navigation }) {
 
-  useEffect( () => {
-    
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          navigation.replace('Tab');
-        } else {
-          navigation.replace('Login');
-        }
-      });
-    }
-  );
+  useEffect( () => { 
+    getToken().then((aUser) => {
+      console.log("Loading Screen Current User - GetTokenCalled - " + JSON.stringify(aUser));
+      if (aUser) {
+        console.log("User is logged in");
+        navigation.replace('Home');
+      } else {
+        console.log("User is not logged in");
+        navigation.replace('Login');
+      }
+    })
+  });
+
 
   return (
     <View style={styles.container}>

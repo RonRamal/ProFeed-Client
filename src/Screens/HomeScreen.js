@@ -10,106 +10,97 @@ import {loggingOut} from '../../API/firebaseMethods';
 import {GetUserIDByEmail} from '../../UserMethods/UserAPI';
 import {faCogs} from '@fortawesome/free-solid-svg-icons'
 import {faBuilding} from '@fortawesome/free-solid-svg-icons'
+import {faHeart} from '@fortawesome/free-solid-svg-icons'
+import {faUser} from '@fortawesome/free-solid-svg-icons'
+import {faSignOutAlt} from '@fortawesome/free-solid-svg-icons'
+
+import {getToken,storeToken, loggingOutDeleteToken} from '../../UserMethods/AsyncStorageService';
+
+
 
 
 function HomeScreen({ navigation })  {
   
-  /*let currentUserUID = firebase.auth().currentUser.uid;
+ //let currentUserUID = firebase.auth().currentUser.uid;
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [profileUrl,setProfileUrl] = useState('');  
-  const [userID, setUserID] = useState('');
+  const [FirstName, setFirstName] = useState('');
+  const [LastName, setLastName] = useState('');
+  const [Email, setEmail] = useState('');
+  const [UserID, setUserID] = useState('');
 
 
-  //Replace ComponentDidMount and ComponentDidUpdate
-  useEffect(() => {
+  // useEffect(() => {
+  //     async function getUserInfo(){
+  //        let user = await firebase.auth().currentUser;
+  //        if(user != null)
+  //        {      
+  //           let UserProviderName = '';
+  //             user.providerData.forEach((userInfo) => {
+  //             console.log('User info for provider: ', userInfo);
+  //             UserProviderName=userInfo.providerId;
+  //           });
+  //           if(UserProviderName==='facebook.com'){             
+  //               setFirstName(user.displayName);
+  //               setEmail(user.email);
+  //               setProfileUrl(user.photoURL);
+  //               UpdateID();
+  //           }else
+  //           {
+  //               let doc = await firebase
+  //               .firestore()
+  //               .collection('users')
+  //               .doc(user.uid)
+  //               .get();
+  //               if (!doc.exists){
+  //                 alert("UserNotSigned");
+  //               } else {
+  //                 let dataObj = doc.data();                
+  //                 setLastName(dataObj.lastName);
+  //                 setFirstName(dataObj.firstName);
+  //                 setEmail(dataObj.email);
+  //                 UpdateID();
+  //               }    
+  //           }                      
+  //        }         
+  //     }
+  //   getUserInfo();
+  // })
 
-      async function getUserInfo(){
-      
-        let user = await firebase.auth().currentUser;
-         if(user != null)
-         {      
-            let UserProviderName = '';
-
-              user.providerData.forEach((userInfo) => {
-                console.log('User info for provider: ', userInfo);
-              UserProviderName=userInfo.providerId;
-
-            });
-            if(UserProviderName==='facebook.com'){             
-                setFirstName(user.displayName);
-                setEmail(user.email);
-                setProfileUrl(user.photoURL);
-                UpdateID();
-            }else
-            {
-                let doc = await firebase
-                .firestore()
-                .collection('users')
-                .doc(user.uid)
-                .get();
-
-                if (!doc.exists){
-                  alert("UserNotSigned");
-                } else {
-                  let dataObj = doc.data();                
-                  setLastName(dataObj.lastName);
-                  setFirstName(dataObj.firstName);
-                  setEmail(dataObj.email);
-                  UpdateID();
-                }    
-            }                      
-         }         
+    useEffect(()=>{
+      async function updateUserData(){    
+        let aUserData = await getToken();
+        setFirstName(aUserData.FirstName);
+        setLastName(aUserData.LastName);
       }
-    getUserInfo();
-  })
-
-
-  const UpdateID=()=>{
-
-    fetch(`http://10.0.0.1:53382/api/ListUser?email=`+email, {
-      method: 'GET',
-    // body: JSON.stringify(UserDetails),
-      headers: new Headers({
-      'Content-type': 'application/json; charset=UTF-8', //very important to add the 'charset=UTF-8'!!!!
-      Accept: 'application/json; charset=UTF-8',
-      })
-    })
-      .then((res) => {
-        console.log('res=', JSON.stringify(res));
-        return res.json();
-      })
-      .then(
-      (result) => {
-        console.log("fetch GetUserIDByEmail= ", result);
-        setUserID(result);
-      },
-      (error) => {
-        console.log("err post=", error);
-      });   
+      updateUserData();
+    });
       
-  }
-*/
 
-  const handlePress = () => {
-    loggingOut();
-    navigation.replace('Login');
+  async function LogoutBTN_eventHandler(){
+    await loggingOutDeleteToken();
+    navigation.replace('Loading');
   };
+
+
   return ( 
     <Container>
       <ImageBackground  source={require('../../assets/HomeScreenPro.png')} style={styles.background} >
   
           <View style={styles.headerButtons_View}>
-              <Button style={styles.LogOutButton} onPress={handlePress} rounded danger >
-                <Icon name="md-exit-outline" />
-                <Text style={{paddingLeft:1}}>LogOut</Text>
+              <Button style={styles.LogOutButton} onPress={LogoutBTN_eventHandler} rounded >
+              <FontAwesomeIcon style={{color:'#1DA1F2',marginLeft:10}} size={25} icon={faSignOutAlt} />
+                <Text style={{paddingLeft:10,marginLeft:5,fontWeight:'bold',color:'#1DA1F2'}}>LogOut</Text>
               </Button>    
+              <Button style={styles.ProfileButton} onPress={() => navigation.navigate('Profile')} rounded >
+                <FontAwesomeIcon style={{color:'#1DA1F2',marginLeft:10}} size={25} icon={faUser} />
+                <Text style={{paddingLeft:10,marginLeft:5,fontWeight:'bold',color:'#1DA1F2'}}>Profile</Text>
+              </Button>   
           </View>   
           <View styles={styles.header_View}> 
-              <Text style={styles.UserText}>Welcome to ProFeed V1,We are excited to share with you our amazing app.</Text>
-              <Text style={styles.UserText}>Which could redefine the marketing industry.</Text>
+              <Text style={styles.FirstSentence}>Welcome to ProFeed!</Text>
+              <Text style={styles.SecondSentence}>You can choose between two options to search for influencers.</Text>
+              <Text style={styles.UserText}>Remember you could add each influencer you like to your favorites.</Text>
+
           </View> 
           <View style={styles.searchButtons_View} >
               <Button style={styles.searchBtnQuery_Button} onPress={() => navigation.navigate('Search')} large rounded success>
@@ -117,7 +108,10 @@ function HomeScreen({ navigation })  {
               </Button>          
               <Button style={styles.searchBtnCustom_Button} onPress={() => navigation.navigate('CustomSearch')} large rounded warning>
                 <Text uppercase={false} style={{color:'black',fontWeight:'bold'}}>Advanced Search <FontAwesomeIcon style={{color:'black'}} size={25} icon={faCogs} /> </Text>
-              </Button>       
+              </Button>     
+              <Button style={styles.searchBtnCustom_Button} onPress={() => navigation.navigate('Favorites')} large rounded warning>
+                <Text uppercase={false} style={{color:'black',fontWeight:'bold'}}>Favorites <FontAwesomeIcon style={{color:'black'}} size={25} icon={faHeart} /> </Text>
+              </Button>      
           </View>      
           <View style={{marginTop:80}}>         
               <Text uppercase={false} style={{color:'black',alignSelf:'center',fontWeight:'bold'}}>ProFeed Inc, Ron | Gai | Orean</Text>
@@ -137,11 +131,10 @@ const styles = StyleSheet.create({
    alignItems:'center',
    flexDirection:'column',
    marginTop:20,
-   paddingTop:80,
+   paddingTop:30,
 
   },
   header_View:{
-    marginBottom:50,
     justifyContent:'center',
     alignItems:'center',
    },
@@ -169,6 +162,19 @@ const styles = StyleSheet.create({
     paddingLeft:10,
     alignSelf:'center',  
     color:'white',
+    marginTop:20
+  },
+  FirstSentence:{
+    fontSize:20,
+    paddingLeft:10,
+    color:'white',
+    marginTop:5
+  },
+  SecondSentence:{
+    fontSize:20,
+    paddingLeft:10,
+    color:'white',
+    marginTop:10
   },
   Text:{
     fontWeight:"bold",
@@ -180,8 +186,16 @@ const styles = StyleSheet.create({
   },
   LogOutButton:{
     marginTop:20,
+    marginLeft:10,
     width:120,
+    backgroundColor:'#FFFFFF'
   },
+  ProfileButton:{
+    marginTop:20,
+    marginLeft:80,
+    width:120,
+    backgroundColor:'#FFFFFF'
+  }
 });
 
 export default HomeScreen;

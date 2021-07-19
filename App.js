@@ -18,12 +18,12 @@ import MyProfile from './src/Screens/MyProfile';
 import ResultsScreen from './src/Screens/ResultsScreen';
 import InfluencerDetails from './src/Screens/InfluencerDetails';
 
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Container,Text,View,Icon } from 'native-base';
 
 import UserSearchScreen from './src/Screens/UserSearchScreen';
 import UserSearchCustom from './src/Screens/UserSearchCustom';
+import FavoritesScreen from './src/Screens/FavoritesScreen';
 
 export default class App extends React.Component {
 
@@ -36,10 +36,10 @@ export default class App extends React.Component {
 
   async componentDidMount() {
 
-    if (!firebase.apps.length) {
-      console.log('Connected with Firebase')
-      firebase.initializeApp(apiKeys.firebaseConfig);
-    }
+    // if (!firebase.apps.length) {
+    //   console.log('Connected with Firebase')
+    //   firebase.initializeApp(apiKeys.firebaseConfig);
+    // }
 
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
@@ -57,7 +57,7 @@ export default class App extends React.Component {
     }
     return (
       <NavigationContainer>
-         <Stack.Navigator initialRouteName={'Login'}>
+         <Stack.Navigator initialRouteName={'Loading'}>
            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown:false }} />
            <Stack.Screen name="Search" component={UserSearchScreen} options={{headerShown:false}}  />
            <Stack.Screen name="CustomSearch" component={UserSearchCustom} options={{headerShown:false}}  />
@@ -66,7 +66,8 @@ export default class App extends React.Component {
            <Stack.Screen name="Loading" component={LoadingScreen} options={{headerShown:false}}  />
            <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />
            <Stack.Screen name="Register" component={SignUpScreen} options={{headerShown:false}} />   
-           <Stack.Screen name="Profile" component={MyProfile} options={{headerShown:false}} />             
+           <Stack.Screen name="Favorites" component={FavoritesScreen} />   
+           <Stack.Screen name="Profile" component={MyProfile} />             
 
            {
             //<Stack.Screen name="NewList" component={NewList} options={{ title: "NewList" }} />
