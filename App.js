@@ -17,10 +17,6 @@ import AboutScreen from './src/Screens/AboutScreen';
 import MyProfile from './src/Screens/MyProfile';
 import ResultsScreen from './src/Screens/ResultsScreen';
 import InfluencerDetails from './src/Screens/InfluencerDetails';
-
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Container,Text,View,Icon } from 'native-base';
-
 import UserSearchScreen from './src/Screens/UserSearchScreen';
 import UserSearchCustom from './src/Screens/UserSearchCustom';
 import FavoritesScreen from './src/Screens/FavoritesScreen';
@@ -35,18 +31,11 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-
-    // if (!firebase.apps.length) {
-    //   console.log('Connected with Firebase')
-    //   firebase.initializeApp(apiKeys.firebaseConfig);
-    // }
-
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
       ...Ionicons.font,
     });
-
     this.setState({ isReady: true });
   }
 
@@ -61,37 +50,19 @@ export default class App extends React.Component {
            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown:false }} />
            <Stack.Screen name="Search" component={UserSearchScreen} options={{headerShown:false}}  />
            <Stack.Screen name="CustomSearch" component={UserSearchCustom} options={{headerShown:false}}  />
-           <Stack.Screen name="Results" component={ResultsScreen}  options={{headerShown:false}}/>
-           <Stack.Screen name="Influencer" component={InfluencerDetails}  options={{title:'Influencer'}}/>
+           <Stack.Screen name="Results" component={ResultsScreen} options={{headerShown:false}}/>
+           <Stack.Screen name="Influencer" component={InfluencerDetails} options={{title:'Influencer'}}/>
            <Stack.Screen name="Loading" component={LoadingScreen} options={{headerShown:false}}  />
            <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />
            <Stack.Screen name="Register" component={SignUpScreen} options={{headerShown:false}} />   
            <Stack.Screen name="Favorites" component={FavoritesScreen} />   
-           <Stack.Screen name="Profile" component={MyProfile} />             
+           <Stack.Screen name="Profile" component={MyProfile} />       
+           <Stack.Screen name="Info" component={AboutScreen} options={{title:'Information'}} />       
 
-           {
-            //<Stack.Screen name="NewList" component={NewList} options={{ title: "NewList" }} />
-            //<Stack.Screen name="Items" component={ItemsScreen} options={{ title: "" }} />
-            //<Stack.Screen name="Lists" component={ListsScreen} options={{headerShown:false}} />
-            //<Stack.Screen name="Tab" component={myTabNavigator}  options={{headerShown:false}}/>
-           }
          </Stack.Navigator>
       </NavigationContainer>
     );
   }
 }
-
-//Create Navigators
 const Stack = createStackNavigator();
-
-// const Tab = createBottomTabNavigator();
-// function myTabNavigator() {
-//   return (
-//     <Tab.Navigator initialRouteName="Home" backBehavior='history' tabBarOptions={{labelStyle:{fontSize:18}}}>
-//        <Tab.Screen name="Home" component={HomeScreen} options={{tabBarLabel:'Profile',tabBarIcon: ()=>(<Icon name="person-circle" style={{ fontSize:40}}/>)}}/>
-//        <Tab.Screen name="Lists" component={ListsScreen} options={{tabBarLabel:'UserArea',tabBarIcon: ()=>(<Icon name="ios-home" style={{ fontSize:40}} />)}} />
-//        <Tab.Screen name="About" component={AboutScreen} options={{tabBarLabel:'About',tabBarIcon: ()=>(<Icon name="ios-information-circle-sharp" style={{ fontSize:40}} />)}} />
-//     </Tab.Navigator>
-//   );
-// }
 

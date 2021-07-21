@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react';
 import { StyleSheet, View,ActivityIndicator, TextInput,Text,TouchableOpacity} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { getToken,storeToken } from '../../UserMethods/AsyncStorageService';
 import { UserPutRequest } from '../../UserMethods/NodeJsService';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -12,9 +11,7 @@ function MyProfile ({navigation}) {
   const [LastName, setLastName] = useState('');
   const [Email, setEmail] = useState('');
   const [UserName, setUserName] = useState('');
-  const [PhoneNumber, setPhoneNumber] = useState('');
-  const [OldPassword, setOldPassword] = useState('');
-  const [NewPassword, setNewPassword] = useState('');
+  const [Id, setId] = useState('');
   const [UpdateLoading, setUpdateLoading] = useState(false);
   const [UserBusy, setUserBusy] = useState(false);
   const [userDataLoaded, setUserDataLoaded] = useState(false);
@@ -24,38 +21,36 @@ function MyProfile ({navigation}) {
     setFirstName('');
     setLastName('');
     setUserName('');
-    setPassword('');
-    setPhoneNumber('');
+    setId('');
     setUserBusy(false);
   }
 
   
+  const fillStatesWithNewData = (iUpdatedData) =>{
+    setEmail(iUpdatedData.Email);
+    setFirstName(iUpdatedData.FirstName);
+    setLastName(iUpdatedData.LastName);
+    setUserName(iUpdatedData.UserName);
+  }
 
-  
   useEffect(() => {
-
-   // console.log("Update User USEEFFECT - ")
     async function updateUserData(){    
-
       let aUserData = await getToken();
       if(aUserData){
+        console.log("MyProfile Data " + JSON.stringify(aUserData));
         setFirstName(aUserData.FirstName);
         setLastName(aUserData.LastName);
         setEmail(aUserData.Email);
         setUserName(aUserData.UserName);
-       // setPhoneNumber(aUserData.PhoneNumber);
+        setId(aUserData.Id);
       }else{
-         emptyStates();
+        emptyStates();
       }
     }
-    //console.log("userDataLoaded " + userDataLoaded);
     if(!userDataLoaded){
       updateUserData();
       setUserDataLoaded(true);
-      console.log("userDataLoaded " + userDataLoaded);
-
     }
-    //console.log("Profile Screen - UseEffect Activated UserBusy " + UserBusy);
     if(UserBusy){
       setUpdateLoading(true);
     }else{
@@ -85,21 +80,25 @@ function MyProfile ({navigation}) {
       alert('Email field is required.');
       setUserBusy(false);
       return;
-    // } else if (!PhoneNumber) {
-    //   alert('PhoneNumber field is required.');
-    //   setUserBusy(false);
-    //   return;
     }else{
-    
+      
+      let UserUpdatedData = {
+        FirstName:FirstName,
+        LastName:LastName,
+        UserName:UserName,
+        Email:Email,
+        Id:Id
+      }
       let putRes = await UserPutRequest(FirstName,LastName,UserName,Email);
       console.log("UserPutRequest putRest: " +  JSON.stringify(putRes));
       if(putRes){
         alert("User Updated Successfully");
         setUserBusy(false);
-        storeToken(putRes);
+        storeToken(UserUpdatedData);
+        setUserDataLoaded(false);
       }
     
-     emptyState();
+      fillStatesWithNewData(UserUpdatedData);
   }
   }
   return (
@@ -147,16 +146,6 @@ function MyProfile ({navigation}) {
             onChangeText={(LastName) => setLastName(LastName)}
             autoCapitalize="none"/>
         </View>
-
-       <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="PhoneNumber..." 
-            placeholderTextColor="white"
-            value={PhoneNumber}
-            onChangeText={(PhoneNumber) => setPhoneNumber(PhoneNumber)}
-            autoCapitalize="none"/>
-        </View> 
         <TouchableOpacity style={styles.loginBtn} onPress={PostUserData_eventHandler}>
         {UpdateLoading ? (<ActivityIndicator size='large' color="#1DA1F2" />):(<Text style={styles.LoginText}>Update Details</Text>)}
         </TouchableOpacity>

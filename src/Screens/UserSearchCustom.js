@@ -1,45 +1,42 @@
 import React from 'react';
-import { Alert, StyleSheet,View ,TouchableHighlight,Image,ImageBackground} from 'react-native';
-import { Container,Header, Content, Button, Input, Item, Text ,Icon,Switch, Left } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import CategoryButton from '../Components/CategoryButton';
+import {StyleSheet,View,Image,ImageBackground} from 'react-native';
+import { Container,Header, Content, Button, Input, Item, Text ,Icon } from 'native-base';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faWindowClose } from '@fortawesome/free-solid-svg-icons'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import {getToken} from '../../UserMethods/AsyncStorageService';
+import {SaveUserSearch} from '../../UserMethods/NodeJsService';
 
 class UserSearchCustom extends React.Component {
 
     constructor(props){
       super(props)
       this.state={      
-        MainCategories:['Fashion','Food','Tech','Fitness','Home styling','Travel'],
-        SubCategories:['Home cooking','Fast food','Vegan','Brand','Accessories','Style'],
-        OtherCategories:['Unboxing','Review','Influencer'],
         QueryInput:'',
-
         FirstInput:'',
         SecondInput:'',
         ThirdInput:'',
-
         First_Stage_Toggle:false,
         Second_Stage_Toggle:false,
         Third_Stage_Toggle:false,
         Submit_BTN_Toggle:false,   
         loadingGif:'',
       };
+      userEmaildataMember='';
   }
+
 
 
   componentDidMount(){
 
-   
+    async function getUserEmail(){    
+      let aUserData = await getToken();
+      console.log("UserSearchCustom SCREEN ->" +JSON.stringify(aUserData));
+      let userEmail = aUserData.Email;
+      console.log("userEmail UserSearchCustom ->" +userEmail);
+      userEmaildataMember = userEmail
+    }
+     getUserEmail();
   }  
-
-  componentWillUnmount(){
-
-  }
-
-
 
   HandleSubmitBtn=()=>{
 
@@ -107,17 +104,39 @@ class UserSearchCustom extends React.Component {
 
 PostToServer=(myQuery)=>{
 
+  console.log('PostToServer CustomSearch=',userEmaildataMember);
+  let aFirst = this.state.FirstInput;
+  let aSecond = this.state.SecondInput;
+  let aThird = this.state.ThirdInput;
+
+  let aOwnerEmail = userEmaildataMember;
+  let aSavedData ={
+     firstCat:aFirst,
+     secondCat:aSecond,
+     thirdCat:aThird
+  }
+  SaveUserSearch(aSavedData,aOwnerEmail)
+  .then((res) => {
+      console.log('SaveUserDataRequest_Client=', JSON.stringify(res));
+      return res;
+    })
+    .then(
+    (result) => {
+      console.log("UserSearchSaved");
+    },
+    (error) => {
+      alert("There has been a problem saving "+aSavedInf.ScreenName);
+      console.log("err post=", error);
+    });
+
+  //______________________________________
+
   let userInputSearch = myQuery;
-  let MinRet = 2;
-
-  //userInputSearch = 'HASHTAGforex';
-
   this.setState({
     loadingGif:'https://media.giphy.com/media/SMKiEh9WDO6ze/giphy.gif',
   })
 
-  
-  fetch(`http://10.0.0.10:60182/api/Twitter?request=` + userInputSearch, {
+  fetch(`http://proj.ruppin.ac.il/igroup29/test2/tar6/api/Twitter?request=` + userInputSearch, {
     method: 'GET',
     headers: new Headers({
     'Content-Type': 'application/json; charset=UTF-8',
@@ -142,10 +161,7 @@ PostToServer=(myQuery)=>{
     (error) => {
       console.log("err GET=", error);
     });
-
-   
 }
-
   render(){
     const {QueryInput,loadingGif} = this.state;
     const {First_Stage_Toggle,Second_Stage_Toggle,Third_Stage_Toggle,Submit_BTN_Toggle,HashTag_BTN_Toggle} = this.state;
@@ -191,7 +207,7 @@ PostToServer=(myQuery)=>{
                 </Button>
                }
             </View>
-            
+        
 
             <Text style={styles.HeaderText}>Stage 3:</Text>
             <View style={{flexDirection:'row'}}>

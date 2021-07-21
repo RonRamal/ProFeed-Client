@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export async function storeToken(user) {
-    console.log("storeToken called - user "+ user);
+    //console.log("storeToken called - user "+ user);
     try {
        await AsyncStorage.setItem("userData", JSON.stringify(user));
     } catch (error) {
@@ -11,12 +11,12 @@ export async function storeToken(user) {
   }
   
   export async function getToken() {
-    console.log("getToken called");
+     //console.log("getToken called");
     try {
       let userData = await AsyncStorage.getItem("userData");
-      console.log("userDataString - "+userData);
+      //console.log("userDataString - "+JSON.stringify(userData));
       let data = JSON.parse(userData);
-      console.log("data - " + userData);
+      //console.log("data - " + data);
       return data
     } catch (error) {
       console.log("Something went wrong", error);
@@ -24,7 +24,7 @@ export async function storeToken(user) {
   }
 
   export async function loggingOutDeleteToken() {
-    console.log("loggingOut called");
+    //console.log("loggingOut called");
     try {
       await AsyncStorage.removeItem("userData");
    } catch (error) {

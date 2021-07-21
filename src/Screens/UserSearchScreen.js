@@ -2,20 +2,23 @@ import React from 'react';
 import { Alert, StyleSheet,View ,TouchableHighlight,Image,ImageBackground} from 'react-native';
 import { Container,Header, Content, Button, Input, Item, Text ,Icon,Switch} from 'native-base';
 import CategoryButton from '../Components/CategoryButton';
+import CategoryButtonV2 from '../Components/CategoryButtonV2';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHashtag } from '@fortawesome/free-solid-svg-icons'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { ActivityIndicator } from 'react-native'
-
+import { GetGlobalSearchKeys,SaveUserSearch } from '../../UserMethods/NodeJsService';
+import {getToken} from '../../UserMethods/AsyncStorageService';
 
 class UserSearchScreen extends React.Component {
 
     constructor(props){
       super(props)
+      this.updateUserData = this.updateUserData.bind(this);
       this.state={      
-        MainCategories:['Tech','Food','Fashion','Fitness','Travel'],
-        SubCategories:['Homemadee','Fast food','Vegan','Accessories','Style','Gaming'],
-        OtherCategories:['Unboxing','Review','Influencer','Workout','Recipe'],
+        MainCategories:[],
+        SubCategories:[],
+        OtherCategories:[],
         QueryInput:'',
         First_Stage_Toggle:true,
         Second_Stage_Toggle:false,
@@ -24,11 +27,56 @@ class UserSearchScreen extends React.Component {
         HashTag_BTN_Toggle:false,   
         StagesArray:['','',''],
         loadingGif:'',
+        FirstCatToggle:true,
+        SecondCatToggle:false,
+        ThirdCatToggle:false,
       };
+      userEmaildataMember=''
   }
 
+    updateUserData=(iCollectionName,iStageNumber)=>{   
+      let searchKeyRes = []; 
+      GetGlobalSearchKeys(iCollectionName).then(aFirstCatRes =>{
+       if(!aFirstCatRes["0"]){
+          return;
+       } 
+        for (const [key, value] of Object.entries(aFirstCatRes["0"])) {
+          if(!(key =="_id")){
+            console.log(`${key}: ${value}`);
+            searchKeyRes.push(value);
+          }
+        }
+        switch(iStageNumber) {
+          case "MainCategories":
+            this.setState({FirstCatToggle:false,MainCategories:searchKeyRes})
+            break;
+          case "SubCategories":
+            this.setState({SecondCatToggle:false,SubCategories:searchKeyRes})
+            break;
+          case "OtherCategories":
+            this.setState({ThirdCatToggle:false,OtherCategories:searchKeyRes})
+            break;
+          default:
+        }
+      })
+    
+  };
 
   componentDidMount(){
+
+    async function getUserEmail(){    
+      let aUserData = await getToken();
+      console.log("UserSeach SCREEN ->" +JSON.stringify(aUserData));
+      let userEmail = aUserData.Email;
+      console.log("userEmail SCREEN ->" +userEmail);
+      userEmaildataMember = userEmail
+   
+     }
+ 
+     getUserEmail();
+
+
+    this.updateUserData("Global","MainCategories");
 
     let stages = this.state.StagesArray;
     let myQuery= this.state.QueryInput;
@@ -85,16 +133,17 @@ class UserSearchScreen extends React.Component {
   }
 
   FirstStageToggle=()=>{
-
+             
       this.setState({
           First_Stage_Toggle:!this.state.First_Stage_Toggle,
       })
   }
   SecondStageToggle=(ButtonName)=>{
-
-    
+    this.setState({SecondCatToggle:true,ThirdCatToggle:false})
+    let aCollectionName = ButtonName.replace(/ /g, '')
+    this.updateUserData(aCollectionName,"SubCategories");
     this.updateQuery(ButtonName,0);
-  
+    
 
     this.setState({
         Second_Stage_Toggle:true,
@@ -102,6 +151,10 @@ class UserSearchScreen extends React.Component {
     })
   }
   ThirdStageToggle=(ButtonName)=>{
+
+    this.setState({ThirdCatToggle:true})
+    let aCollectionName = ButtonName.replace(/ /g, '')
+    this.updateUserData(aCollectionName,"OtherCategories");
 
     this.updateQuery(ButtonName,1);
 
@@ -124,15 +177,45 @@ SubmitBtnToggle=(ButtonName)=>{
 
 PostToServer=()=>{
 
-  let userInputSearch = this.state.QueryInput;
-  //this.FirstStageToggle();
+  console.log('PostToServer=',userEmaildataMember);
+  let stages = this.state.StagesArray;
+  let aFirst = stages[0].replace(',',"");
+  let aSecond = stages[1].replace(',',"");
+  let aThird = stages[2].replace(',',"");
 
+  let aOwnerEmail = userEmaildataMember;
+  let aSavedData ={
+     firstCat:aFirst,
+     secondCat:aSecond,
+     thirdCat:aThird
+  }
+  console.log(JSON.stringify(aSavedData));
+
+ 
+  SaveUserSearch(aSavedData,aOwnerEmail)
+  .then((res) => {
+      console.log('SaveUserDataRequest_Client=', JSON.stringify(res));
+      return res;
+    })
+    .then(
+    (result) => {
+      console.log("UserSearchSaved");
+    },
+    (error) => {
+      alert("There has been a problem saving "+aSavedInf.ScreenName);
+      console.log("err post=", error);
+    });
+
+
+
+
+
+  let userInputSearch = this.state.QueryInput;
   this.setState({
     loadingGif:'https://media.giphy.com/media/SMKiEh9WDO6ze/giphy.gif',
   })
   this.ClearStages();
-  //userInputSearch = 'HASHTAGforex';
-  fetch(`http://10.0.0.10:60182/api/Twitter?request=` + userInputSearch, {
+  fetch(`http://proj.ruppin.ac.il/igroup29/test2/tar6/api/Twitter?request=` + userInputSearch, {
     method: 'GET',
     headers: new Headers({
     'Content-Type': 'application/json; charset=UTF-8',
@@ -185,7 +268,8 @@ ClearStages=()=>{
     const {QueryInput,loadingGif} = this.state;
     const {First_Stage_Toggle,Second_Stage_Toggle,Third_Stage_Toggle,Submit_BTN_Toggle,HashTag_BTN_Toggle} = this.state;
     const {MainCategories,SubCategories,OtherCategories} = this.state;
-   
+    const {FirstCatToggle,SecondCatToggle,ThirdCatToggle} = this.state;
+
    return(
 
     <Container>
@@ -200,7 +284,7 @@ ClearStages=()=>{
         </Item>   
 
         {loadingGif ? (<View/>) 
-            : (<View style={{flexDirection:'row',marginBottom:15}}>
+            : (<View style={{flexDirection:'row'}}>
             <Text style={{fontSize:20,fontWeight:'bold',color:'#1DA1F2'}}>  HashTag
               <FontAwesomeIcon style={{color:'#1DA1F2'}} size={20} icon={ faHashtag } />
             </Text>  
@@ -220,27 +304,32 @@ ClearStages=()=>{
             </View>) :
             (<View>
              {First_Stage_Toggle && <Text style={styles.HeaderText}>Stage 1:</Text>}
-            <View style={{width:'100%',paddingBottom:20,flexDirection:'row',flexWrap:'wrap',alignContent:'center',alignItems:'center'}}>
+            <View style={{width:'100%',paddingBottom:5,flexDirection:'row',flexWrap:'wrap',alignContent:'center',alignItems:'center'}}>
               {
+              FirstCatToggle ? (<ActivityIndicator size={65} color="#1DA1F2" style={{marginLeft: 130}} />):(
               First_Stage_Toggle &&
               MainCategories.map((item,key)=><CategoryButton ButtonName={item} key={key} ClickEvent={this.SecondStageToggle} /> )
+              )
               }
             </View>
 
             {Second_Stage_Toggle && <Text style={styles.HeaderText}>Stage 2:</Text>}
-            <View style={{width:'100%',flexDirection:'row',paddingBottom:10,flexWrap:'wrap'}}>
+            <View style={{width:'100%',flexDirection:'row',paddingBottom:5,flexWrap:'wrap'}}>
               {
+              SecondCatToggle ? (<ActivityIndicator size={65} color="#1DA1F2" style={{marginLeft: 130}}/>):(
               Second_Stage_Toggle &&
-              SubCategories.map((item,key)=><CategoryButton ButtonName={item} key={key} ClickEvent={this.ThirdStageToggle} /> )
+              SubCategories.map((item,key)=><CategoryButtonV2 ButtonName={item} key={key} ClickEvent={this.ThirdStageToggle} /> )
+              )
               }
             </View>
-            
 
             {Third_Stage_Toggle && <Text style={styles.HeaderText}>Stage 3:</Text>}
             <View style={{width:'100%',flexDirection:'row',paddingBottom:10,flexWrap:'wrap'}}>
               {
+              ThirdCatToggle ? (<ActivityIndicator style={{marginLeft: 130}} size={65} color="#1DA1F2" alignSelf='center'/>):(
               Third_Stage_Toggle && 
               OtherCategories.map((item,key)=><CategoryButton ButtonName={item} key={key} ClickEvent={this.SubmitBtnToggle} /> )
+              )
               }
             </View>
 
@@ -274,7 +363,7 @@ const styles = StyleSheet.create({
   HeaderText:{
    fontSize:27,
    fontWeight:'bold',
-   marginBottom:5,
+   marginBottom:2,
    color:'#1DA1F2'
   }, 
  

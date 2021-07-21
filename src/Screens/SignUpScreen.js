@@ -7,27 +7,26 @@ import {getToken, storeToken} from '../../UserMethods/AsyncStorageService';
 
 function SignUpScreen ({ navigation })  {
 
-  const [firstName, setFirstName] = useState('Ron');
-  const [lastName, setLastName] = useState('sdsd');
-  const [userName, setUserName] = useState('sdasd');
-  const [email, setEmail] = useState('RonRamal@outlook.com');
-  const [password, setPassword] = useState('qwerty123');
-  const [confirmPassword, setConfirmPassword] = useState('qwerty123');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [signUpLoading, setSignUpLoading] = useState(false);
   const [UserBusy,setUserBusy] = useState(false);
 
   const emptyState = () => {
-    setFirstName('Ron');
-    setLastName('sdsd');
-    setUserName('sdasd');
-    setEmail('RonRamal@outlook.com');
-    setPassword('qwerty123');
-    setConfirmPassword('qwerty123');
+    setFirstName('');
+    setLastName('');
+    setUserName('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
   };
 
 
   useEffect(() => {
-   // console.log("SignUpScreen - UseEffect Activated UserBusy " + UserBusy);
     if(UserBusy){
       setSignUpLoading(true);
 
@@ -38,7 +37,6 @@ function SignUpScreen ({ navigation })  {
 
  async function handlePress(){
     setUserBusy(true);
-
     if (!firstName) {
       Alert.alert('First name is required');  
       setUserBusy(true);
@@ -79,8 +77,10 @@ function SignUpScreen ({ navigation })  {
           if(postRes){
             alert("Signed Up Successfully");
             setUserBusy(false);
+            alert(JSON.stringify(postRes));
             storeToken(postRes);
             navigation.navigate("Login");
+            
           }
         }else{
           alert("Email is already in Use");
@@ -181,9 +181,9 @@ const styles = StyleSheet.create({
     fontWeight:"bold",
     fontSize:36,
     color:"white",
-    marginBottom:30,
+    marginBottom:40,
     alignSelf:'center',
-    marginTop:30
+    marginTop:50
   },
   inputView:{
     width:'80%',

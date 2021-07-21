@@ -125,6 +125,7 @@ handleEmail = () => {
 
 render(){
    const {SelectedInfluencer} = this.state;
+
    const UserPage = SelectedInfluencer.ProfileUrl;
    const UserWebsite = SelectedInfluencer.Website;
    return(
@@ -176,7 +177,7 @@ render(){
 
           </View>
 
-          <Text style={{alignSelf:'center',fontWeight:'bold'}}>_____________________________________________</Text>
+          <Text style={{alignSelf:'center',fontWeight:'bold',marginBottom:20}}>_____________________________________________</Text>
           
           <View style={styles.influencerDetails_View}>
             <Text style={styles.InfHeader}><FontAwesomeIcon style={{color:'#1DA1F2'}} size={30} icon={faCalculator} /> Influencer Details:</Text>
@@ -190,10 +191,10 @@ render(){
               {this.RenderCalculatedTweets()}          
             </Text>
             <Text></Text>
-            <Text style={styles.InfText}>{SelectedInfluencer.Description}</Text>
+            <Text style={styles.DescText}>{SelectedInfluencer.Description}</Text>
           </View>
-
-          {/* <View style={{ width:"100%",paddingLeft:5,flexDirection:'row',flexWrap:'wrap',alignContent:'center',justifyContent: 'center'}}> 
+{/* 
+          <View style={{ width:"100%",paddingLeft:5,flexDirection:'row',flexWrap:'wrap',alignContent:'center',justifyContent: 'center'}}> 
 
             <Button style={styles.RankingBtn} disabled rounded >
               <Text uppercase={false}> Impact: {SelectedInfluencer.Impact}</Text>
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
     color:'#1DA1F2',
     fontWeight:'bold',
     marginBottom:5,
-    marginTop:5,
+    marginTop:12,
 
   },
   influencerDetails_View:{
@@ -292,13 +293,24 @@ const styles = StyleSheet.create({
     width:60,
     justifyContent: 'center',
     marginBottom:20,
-    color:'#1DA1F2'
+    backgroundColor:"white",
+    borderWidth: 1,
+    borderColor: '#1DA1F2',
 
    },
    InfText:{
      fontSize:18,
-     color:'#657786'
+     color:'#657786',
+     fontWeight:'bold'
    },
+   DescText:{
+    fontSize:18,
+    color:'#657786',
+    marginBottom:50,
+    fontWeight:'bold'
+
+  },
+ 
   
   
 });

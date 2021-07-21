@@ -1,27 +1,16 @@
 import React, { useState,useEffect } from 'react';
-import * as Facebook from 'expo-facebook';
 import { StyleSheet, View,ActivityIndicator, TextInput,Text,TouchableOpacity, NativeModules} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {LoginRequestUserName} from '../../UserMethods/NodeJsService';
 import {LoginRequestEmail} from '../../UserMethods/NodeJsService';
-
-import "firebase/firestore";
-import firebase from "firebase";
-import {PostUserToServerFacebook} from '../../UserMethods/UserAPI';
-import {CheckIfUserExists} from '../../UserMethods/UserAPI';
 import { storeToken } from '../../UserMethods/AsyncStorageService';
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faEnvelope,faLock,faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 
 function LoginScreen ({navigation}) {
  
-  const [email, setEmail] = useState('RonRamal@outlook.com');
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('qwerty123');
-  const [name, setName] = useState('');
-  const [token, setToken] = useState('');
-  const [photoUrl, setPhotoUrl] = useState('');
-  const [lblErr, setlblErr] = useState('');
-  const [check ,setCheck] = useState(0);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [LoginLoading, setLoginLoading] = useState(false);
   const [userBusy, setUserBusy] = useState(false);
   const {RNTwitterSignin} = NativeModules;
@@ -30,7 +19,6 @@ function LoginScreen ({navigation}) {
      TWITTER_API_KEY:'8gJiTw1ohwk6EyfrKduvLJdII',
      TWITTER_API_SECRET:'UovMbaBiR2CFS30wn9MHCgJdh9sebdVEUab35koi1V8r7NqnNw'
   }
-
 
   const btnFBLogin = async() => {
     RNTwitterSignin.init(API_KEYS.TWITTER_API_KEY,API_KEYS.TWITTER_API_SECRET)
@@ -44,14 +32,11 @@ function LoginScreen ({navigation}) {
 
   const emptyStates = () =>{
     setEmail('');
-    setUserName('');
-    setPassword('');
     setUserBusy(false);
   }
 
-
   useEffect(() => {
-    console.log("Login Screen - UseEffect Activated UserBusy " + userBusy);
+ 
     if(userBusy){
       setLoginLoading(true);
     }else{
@@ -60,11 +45,9 @@ function LoginScreen ({navigation}) {
   });
 
   async function LoginBtnPressed_eventHandler(){
-
     setUserBusy(true);
-
-    if (!email && !userName ) {
-      alert('Email/UserName field is required.');
+    if (!email ) {
+      alert('Email field is required.');
       setUserBusy(false);
       return;
     }else if(!password){
@@ -73,10 +56,7 @@ function LoginScreen ({navigation}) {
       return;
     }
     if(email){
-        console.log("LoginBtnPressed_eventHandler - email:" + email +",password:"+password);
         let aLoginResult = await LoginRequestEmail(email,password);
-        //console.log("Login Screen -> LoginRequestEmail result : " + JSON.stringify(aLoginResult));
-
         if(!aLoginResult){
            alert("Email / Password Details are wrong");
            setUserBusy(false);
@@ -95,10 +75,7 @@ function LoginScreen ({navigation}) {
           navigation.navigate('Loading');
         }
     }else{
-      console.log("LoginBtnPressed_eventHandler - userName:" + userName +",password:"+password);
       let aLoginResult = await LoginRequestUserName(userName,password);
-      console.log("Login Screen -> LoginRequestUserName result : " + JSON.stringify(aLoginResult));
-
       if(!aLoginResult){
          alert("UserName / Password Details are wrong");
          setUserBusy(false);
@@ -129,8 +106,7 @@ function LoginScreen ({navigation}) {
         <Text style={styles.MainLogo}>
         <Ionicons name="md-logo-twitter" size={40}/> ProFeed
           </Text>
-        <Text style={styles.SecondaryLogo}>Login</Text>
-
+        <Text style={styles.SecondaryLogo}>Login <FontAwesomeIcon style={{color:'white',marginTop: 20,}} size={35} icon={faSignInAlt} /></Text>
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
@@ -139,18 +115,8 @@ function LoginScreen ({navigation}) {
             value={email}
             onChangeText={(email) => setEmail(email)}
             autoCapitalize="none"/>
+             <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 220,position:'absolute'}} size={30} icon={faEnvelope} />
         </View>
-
-        <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="UserName..." 
-            placeholderTextColor="white"
-            value={userName}
-            onChangeText={(userName) => setUserName(userName)}
-            autoCapitalize="none"/>
-        </View>
-
         <View style={styles.inputView} >
           <TextInput  
             secureTextEntry
@@ -159,26 +125,20 @@ function LoginScreen ({navigation}) {
             placeholderTextColor="white"
             value={password}
             onChangeText={(password) => setPassword(password)}/>
+            <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 220,position:'absolute'}} size={30} icon={faLock} />
+
         </View>
-
-        {/* <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
-        </TouchableOpacity> */}
-
         <TouchableOpacity style={styles.loginBtn} onPress={LoginBtnPressed_eventHandler}>
         {LoginLoading ? (<ActivityIndicator size='large' color="#1DA1F2" />):(<Text style={styles.LoginText}>LOGIN</Text>)}
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.facebookBtn} onPress={btnFBLogin}>     
+        {/* <TouchableOpacity style={styles.facebookBtn} onPress={btnFBLogin}>     
          <Text style={styles.FaceBookLoginText}> 
           <Ionicons name="md-logo-twitter" size={20}/> Login with Twitter
          </Text>
-        </TouchableOpacity>
-
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.SignUpBtn} onPress={() =>navigation.navigate('Register')}  >
           <Text style={styles.SignUpText}>SignUp</Text>
         </TouchableOpacity>
-        
   </View>
   );
 }
@@ -195,16 +155,14 @@ const styles = StyleSheet.create({
     fontWeight:"bold",
     fontSize:50,
     color:"white",
-    marginBottom:30,
     alignSelf:'center',
-    marginTop: 40,
   },
   SecondaryLogo:{
     fontWeight:"bold",
-    fontSize:35,
+    fontSize:40,
     color:"white",
     marginBottom:30,
-    marginTop: 40,
+    marginTop: 120,
   },
   inputView:{
     width:"80%",
@@ -212,8 +170,8 @@ const styles = StyleSheet.create({
     borderRadius:25,
     height:50,
     marginBottom:20,
-    justifyContent:"center",
-    padding:20
+    flexDirection:'row',
+    paddingLeft: 30,
   },
   Pic:{
     width:"60%",
@@ -255,7 +213,7 @@ const styles = StyleSheet.create({
     height:30,
     alignItems:"center",
     justifyContent:"center",
-    marginTop:20,
+    marginTop:30,
   },
   SignUpText:{
     color:"#1DA1F2",
