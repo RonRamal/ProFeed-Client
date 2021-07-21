@@ -115,7 +115,7 @@ function LoginScreen ({navigation}) {
             value={email}
             onChangeText={(email) => setEmail(email)}
             autoCapitalize="none"/>
-             <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 220,position:'absolute'}} size={30} icon={faEnvelope} />
+             <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 240,position:'absolute'}} size={30} icon={faEnvelope} />
         </View>
         <View style={styles.inputView} >
           <TextInput  
@@ -125,7 +125,7 @@ function LoginScreen ({navigation}) {
             placeholderTextColor="white"
             value={password}
             onChangeText={(password) => setPassword(password)}/>
-            <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 220,position:'absolute'}} size={30} icon={faLock} />
+            <FontAwesomeIcon style={{color:'white' ,marginTop: 10,marginLeft: 240,position:'absolute'}} size={30} icon={faLock} />
 
         </View>
         <TouchableOpacity style={styles.loginBtn} onPress={LoginBtnPressed_eventHandler}>
